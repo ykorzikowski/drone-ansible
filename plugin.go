@@ -135,7 +135,7 @@ func (p *Plugin) ansibleConfig() error {
 }
 
 func (p *Plugin) privateKey() error {
-	tmpfile, err := os.CreateTemp("", "privateKey")
+	tmpfile, err := os.Create("~/.ssh/id_rsa")
 
 	if err != nil {
 		return errors.Wrap(err, "failed to create private key file")
