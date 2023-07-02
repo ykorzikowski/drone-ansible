@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -57,6 +58,7 @@ type (
 		Become            bool
 		BecomeMethod      string
 		BecomeUser        string
+		UserAnsibleCfg    string
 	}
 
 	Plugin struct {
@@ -129,6 +131,19 @@ func (p *Plugin) ansibleConfig() error {
 
 	if err := os.WriteFile(ansibleConfig, []byte(ansibleContent), 0600); err != nil {
 		return errors.Wrap(err, "failed to create ansible config")
+	}
+
+	if p.Config.UserAnsibleCfg != "" {
+		input, err := ioutil.ReadFile(p.Config.UserAnsibleCfg)
+		if err != nil {
+			fmt.Println(err)
+			return errors.Wrap(err, "failed to copy user ansible config")
+		}
+
+		err = ioutil.WriteFile(ansibleConfig, input, 0600)
+		if err != nil {
+			return errors.Wrap(err, "failed to copy user ansible config")
+		}
 	}
 
 	return nil
